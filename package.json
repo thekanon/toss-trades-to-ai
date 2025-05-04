@@ -1,0 +1,34 @@
+{
+  "name": "toss-trades-to-ai",
+  "version": "1.0.0",
+  "main": "index.js",
+  "type": "module",
+  "bin": {
+    "parse-trades": "bin/parse-trades.mjs",
+    "compact-trades": "bin/compact-trades.mjs",
+    "toss-trades": "bin/toss-trades.mjs"
+  },
+  "scripts": {
+    "parse": "toss-trades parse",
+    "compact": "toss-trades compact",
+    "run": "toss-trades run",
+    "ctl": "toss-trades ctl-run",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/thekanon/toss-trades-to-ai.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/thekanon/toss-trades-to-ai/issues"
+  },
+  "homepage": "https://github.com/thekanon/toss-trades-to-ai#readme",
+  "description": "",
+  "dependencies": {
+    "chalk": "^5.4.1",
+    "commander": "^13.1.0",
+    "inquirer": "^12.6.0"
+  }
+}
