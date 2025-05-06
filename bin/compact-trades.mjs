@@ -1,38 +1,31 @@
 #!/usr/bin/env node
-/**
-node compactTrades.js input/2021-2022.json output/2021-2022.json symbol month
-node compactTrades.js input/2022-2023.json output/2022-2023.json symbol month
-node compactTrades.js input/2023-2024.json output/2023-2024.json symbol month
-node compactTrades.js input/2024-2025.json output/2024-2025.json symbol month
- */
-/* 거래 JSON → 요약(compact) JSON
-   txt/md 입력이면 자동 parseText → compact 까지 */
-
+/* 거래 JSON | rows | raw → 요약(compact) JSON (ESM) */
 import fs from "fs";
 import { resolve, extname } from "path";
-import { fileURLToPath } from "url";
 import { parseText, compact } from "../lib/trades.js";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname  = new URL(".", import.meta.url).pathname;
-
 function usage() {
-  console.error("사용: compact-trades <in.(json|txt|md)> <out.json> [date|symbol] [day|month]");
+  console.error("사용: compact-trades <input.(json|txt|md)> <output.json> [date|symbol] [day|month]");
   process.exit(1);
 }
 
 (function main() {
-  const [, , inF, outF, target = "date", period = "day"] = process.argv;
+  const [, , inF, outF, target = "symbol", period = "month"] = process.argv;
   if (!inF || !outF) usage();
-  if (!["date", "symbol"].includes(target) ||
-      !["day", "month"].includes(period))  usage();
+  if (!["date", "symbol"].includes(target) || !["day", "month"].includes(period)) usage();
 
-  const raw = fs.readFileSync(resolve(__dirname, "..", inF), "utf8");
-  const records =
-    [".txt", ".md"].includes(extname(inF)) ? parseText(raw) : JSON.parse(raw);
+  const raw = fs.readFileSync(resolve(process.cwd(), inF), "utf8");
+  const ext = extname(inF);
 
-  const outJson = compact(records, target, period);
+  let records;
+  if ([".txt", ".md"].includes(ext)) {
+    records = parseText(raw);
+  } else {
+    const parsed = JSON.parse(raw);
+    records = Array.isArray(parsed) && typeof parsed[0] === "string" ? parseText(parsed) : parsed;
+  }
 
-  fs.writeFileSync(resolve(__dirname, "..", outF), JSON.stringify(outJson));
+  const summary = compact(records, target, period);
+  fs.writeFileSync(resolve(process.cwd(), outF), JSON.stringify(summary, null, 2));
   console.log(`✅ ${inF} → ${outF} (target=${target}, period=${period})`);
 })();
